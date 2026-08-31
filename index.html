@@ -3,30 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Video Player</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
     body {
-      width: 100%;
-      height: 100%;
       margin: 0;
-      padding: 0;
       background: #000;
-      overflow: hidden;
     }
 
-    #player {
-      display: block;
+    video {
       width: 100%;
       height: 100vh;
-      background: #000;
       object-fit: contain;
+      background: #000;
     }
   </style>
 </head>
@@ -37,268 +26,53 @@
     id="player"
     controls
     playsinline
-    controlsList="nodownload"
-    preload="metadata">
+    controlsList="nodownload">
   </video>
 
   <script>
-    /*
-      =====================================================
-      URL JSON DARI REPOSITORY GITHUB LAIN
-      =====================================================
-
-      Ganti bagian ini dengan URL RAW GitHub Anda.
-
-      Contoh:
-      https://raw.githubusercontent.com/USERNAME/REPOSITORY/main/videos.json
-    */
-
-    const JSON_URL =
-      "https://raw.githubusercontent.com/liwa22/cdn2.slicedrive.cloud-terapop/main/videos.json";
-
-
-    /*
-      =====================================================
-      LINK REDIRECT / IKLAN
-      =====================================================
-    */
+    const JSON_URL = "videos.json";
 
     const DIRECT_LINK =
-      "https://countyrecyclefailed.com/cb4srb0u?key=88e9324fbaef4acbebba658e75a35351";
-
-
-    /*
-      =====================================================
-      VIDEO PLAYER
-      =====================================================
-    */
+      "https://www.profitableratecpmnetwork.com/whsja470u1?key=104b52f9c0a61aadfcb77cf47d84e848";
 
     const video = document.getElementById("player");
 
     let clicked = false;
     let redirected = false;
 
-
-    /*
-      =====================================================
-      AMBIL JSON
-      =====================================================
-    */
-
     fetch(JSON_URL)
-      .then(response => {
-
-        if (!response.ok) {
-          throw new Error(
-            "Gagal mengambil videos.json. HTTP Status: " +
-            response.status
-          );
-        }
-
-        return response.json();
-      })
-
+      .then(res => res.json())
       .then(data => {
-
-        /*
-          Pastikan JSON mempunyai:
-
-          {
-            "videos": [
-              {
-                "id": "k1219Tk.mp4",
-                "cdn": "https://..."
-              }
-            ]
-          }
-        */
-
-        if (!data || !Array.isArray(data.videos)) {
-          throw new Error(
-            'Format JSON salah. Harus terdapat array "videos".'
-          );
-        }
-
 
         const vids = data.videos;
 
-
-        if (vids.length === 0) {
-          throw new Error(
-            "Tidak ada video di dalam JSON."
-          );
-        }
-
-
-        /*
-          =================================================
-          AMBIL ID DARI URL
-
-          Contoh URL:
-
-          https://domainanda.com/player.html#/k1219Tk.mp4
-
-          hasil:
-          k1219Tk.mp4
-          =================================================
-        */
-
-        const hash = location.hash;
-
         const id = decodeURIComponent(
-          hash.replace(/^#\/?/, "")
+          location.hash.replace("#/", "")
         );
-
-
-        /*
-          =================================================
-          CARI VIDEO BERDASARKAN ID
-          =================================================
-        */
 
         let selected = vids.find(
-          videoData => videoData.id === id
+          v => v.id === id
         );
-
-
-        /*
-          Kalau ID tidak ditemukan,
-          gunakan video pertama.
-        */
 
         if (!selected) {
           selected = vids[0];
         }
 
-
-        /*
-          =================================================
-          SET VIDEO
-          =================================================
-        */
-
-        if (!selected.cdn) {
-          throw new Error(
-            "URL CDN video tidak ditemukan."
-          );
-        }
-
         video.src = selected.cdn;
-
-        video.load();
-      })
-
-      .catch(error => {
-
-        console.error(
-          "Video Player Error:",
-          error
-        );
-
-        /*
-          Jangan menampilkan ID JSON.
-          Hanya tampilkan error di console.
-        */
       });
 
-
-    /*
-      =====================================================
-      REDIRECT SAAT VIDEO DIKLIK
-      =====================================================
-    */
-
     video.addEventListener("click", () => {
-
       if (!clicked) {
-
         clicked = true;
-
         window.location.href = DIRECT_LINK;
       }
-
-    }, {
-      once: true
-    });
-
-
-    /*
-      =====================================================
-      REDIRECT SETELAH 30 DETIK
-      =====================================================
-    */
+    }, { once: true });
 
     video.addEventListener("timeupdate", () => {
-
-      if (
-        !redirected &&
-        video.currentTime >= 30
-      ) {
-
+      if (!redirected && video.currentTime >= 30) {
         redirected = true;
-
         window.location.href = DIRECT_LINK;
       }
-
-    });
-
-
-    /*
-      =====================================================
-      JIKA URL HASH BERUBAH
-      =====================================================
-
-      Contoh:
-
-      #/video1.mp4
-      menjadi
-      #/video2.mp4
-
-      player akan mengambil video baru.
-      =====================================================
-    */
-
-    window.addEventListener("hashchange", () => {
-
-      const hash = location.hash;
-
-      const id = decodeURIComponent(
-        hash.replace(/^#\/?/, "")
-      );
-
-
-      fetch(JSON_URL)
-        .then(response => response.json())
-        .then(data => {
-
-          const vids = data.videos || [];
-
-          let selected = vids.find(
-            videoData => videoData.id === id
-          );
-
-
-          if (!selected && vids.length > 0) {
-            selected = vids[0];
-          }
-
-
-          if (selected && selected.cdn) {
-
-            video.src = selected.cdn;
-
-            video.load();
-          }
-
-        })
-
-        .catch(error => {
-          console.error(
-            "Gagal mengganti video:",
-            error
-          );
-        });
-
     });
   </script>
 
